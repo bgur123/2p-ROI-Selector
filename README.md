@@ -22,3 +22,14 @@ setupGUI.m
 -Saving data in the Silies lab commonly used format pData
 -Transferring the saved pData to a master folder
 
+## Current Problems about GUI ##
+
+1) Figure colouring can cause problems in different matlab versions. Make a logical figure colouring especially when the masks are being plotted and the colormaps are being generated.
+
+2) Auto numerate when using different ROI numbers than previous masks
+
+3) Selecting which mask to use and to plot (when you have multiple masks) should be added as an option
+
+4) During setup a function should be added to understand the data naming structure of the user
+
+5) Selection of ROI selection method should be more logical (clicking one and unclicking one etc.) since it can lead to problems when the last action was to unclick one 
