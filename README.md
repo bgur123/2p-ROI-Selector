@@ -28,8 +28,6 @@ setupGUI.m
 
 2) Auto numerate when using different ROI numbers than previous masks
 
-3) Selecting which mask to use and to plot (when you have multiple masks) should be added as an option
+3) During setup a function should be added to understand the data naming structure of the user
 
-4) During setup a function should be added to understand the data naming structure of the user
-
-5) Selection of ROI selection method should be more logical (clicking one and unclicking one etc.) since it can lead to problems when the last action was to unclick one 
+4) Selection of ROI selection method should be more logical (clicking one and unclicking one etc.) since it can lead to problems when the last action was to unclick one 

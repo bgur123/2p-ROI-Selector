@@ -22,7 +22,7 @@ function varargout = ROISelector_v1(varargin)
 
 % Edit the above text to modify the response to help ROISelector_v1
 
-% Last Modified by GUIDE v2.5 13-Dec-2017 17:06:31
+% Last Modified by GUIDE v2.5 16-Feb-2018 22:08:13
 
 % Begin initialization code - DO NOT EDIT
 
@@ -56,11 +56,16 @@ function ROISelector_v1_OpeningFcn(hObject, eventdata, handles, varargin)
 
 
 
-% Run the folder name function
-load('UserFolders.mat')
-handles.data_folder = data_folder ;
-handles.Pdata_folder = Pdata_folder ;
-handles.Path_folder = pathName ;
+% Run the folder name function if not throw an error
+try 
+    load('UserFolders.mat')
+    handles.data_folder = data_folder ;
+    handles.Pdata_folder = Pdata_folder ;
+    handles.Path_folder = pathName ;
+catch error
+    errordlg('User folder information was not found please run the GUI Setup')
+end
+
 
 % Adds the path of the analysis functions in case
 addpath(genpath(handles.Path_folder))
@@ -92,7 +97,7 @@ varargout{1} = handles.output;
 
 
 % --- Executes on button press in pushbutton7.
-% SELECT THE FOLDER
+% SELECT THE FOLDER CONTAINING DATA
 function handles = pushbutton7_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -118,7 +123,7 @@ guidata(hObject, handles);
 % --------------------------------------------------------------------
 
 
-
+%  INPUTTING THE IMAGE NUMBER AND UPDATING THE DISPLAY
 function edit1_Callback(hObject, eventdata, handles)
 % hObject    handle to edit1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -127,12 +132,26 @@ function edit1_Callback(hObject, eventdata, handles)
 %Gets the image number for ROI selection
 imageNumber = str2double(get(hObject, 'String'));
 handles.imageNumber = imageNumber;
-msgbox(sprintf('Image ''%d'' is selected for ROI selection ', imageNumber))
+
+%Converts it to string for display
+handles.imageNumberName = sprintf('Image %d',imageNumber);
+if ~isfield(handles,'imageNumberText')
+       
+        handles.imageNumberText = text( 0.05,0.5, handles.imageNumberName, ...
+            'parent', handles.imageNumberAxes, 'FontSize', 16 );
+else
+        set( handles.imageNumberText,'String',handles.imageNumberName)
+end
+
+
 guidata(hObject, handles);
 
 
 
+
+
 % --- Executes during object creation, after setting all properties.
+% Creating the button
 function edit1_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to edit1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -150,7 +169,7 @@ function pushbutton8_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-fprintf('Preparing to select ROIs')
+fprintf('Visualizing ROIs')
 imageData = ROI_Selector(handles.foldername,handles.imageNumber);
 handles.imageData = imageData;
 ROI_pre_view(imageData.out, handles)
@@ -173,14 +192,6 @@ function pushbutton8_CreateFcn(hObject, eventdata, handles)
 %asd 
 
 
-% --- Executes during object creation, after setting all properties.
-function axes5_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to axes5 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-
-% Hint: place code in OpeningFcn to populate axes5
 
 % --- Executes during object creation, after setting all properties.
 function axes1_CreateFcn(hObject, eventdata, handles)
@@ -194,6 +205,7 @@ guidata(hObject, handles);
 
 
 % --- Executes on button press in pushbutton9.
+% SAVING DATA BUTTON
 function pushbutton9_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton9 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -223,8 +235,17 @@ function edit2_Callback(hObject, eventdata, handles)
 % hObject    handle to edit2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-secondImageNumber = str2double(get(hObject, 'String'))
+secondImageNumber = str2double(get(hObject, 'String'));
 handles.secondImageNumber = secondImageNumber;
+
+handles.secondImageNumberName = sprintf('Image %d',secondImageNumber);
+if ~isfield(handles,'secondImageNumberText')
+        
+        handles.secondImageNumberText = text( 0.05,0.5, handles.secondImageNumberName, ...
+            'parent', handles.secondImageNumberAxes, 'FontSize', 16 );
+else
+        set( handles.secondImageNumberText,'String',handles.secondImageNumberName)
+end
 guidata(hObject, handles);
 % Hints: get(hObject,'String') returns contents of edit2 as text
 %        str2double(get(hObject,'String')) returns contents of edit2 as a double
@@ -251,7 +272,7 @@ function pushbutton10_Callback(hObject, eventdata, handles)
 secondImageData = ROI_Selector(handles.foldername,handles.secondImageNumber);
 clear handles.secondImageData
 handles.secondImageData = secondImageData;
-maskFileNo = 1
+maskFileNo = handles.secondImageMaskNumber;
 ROI_Show(secondImageData.out, maskFileNo, handles);
 
 
@@ -511,3 +532,52 @@ function pushbutton17_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 reset(handles.ROIaxes);
 
+
+% --- Executes during object creation, after setting all properties.
+% FOR DISPLAYING SELECTED IMAGE NUMBER
+function axes9_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes9 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+handles.imageNumberAxes = gca;
+axis off
+% Hint: place code in OpeningFcn to populate axes9
+guidata(hObject, handles);
+
+
+
+function edit5_Callback(hObject, eventdata, handles)
+% hObject    handle to edit5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+secondImageMaskNumber = str2double(get(hObject, 'String'));
+handles.secondImageMaskNumber = secondImageMaskNumber;
+guidata(hObject, handles);
+% Hints: get(hObject,'String') returns contents of edit5 as text
+%        str2double(get(hObject,'String')) returns contents of edit5 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit5_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function axes10_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+handles.secondImageNumberAxes = gca;
+axis off
+% Hint: place code in OpeningFcn to populate axes10
+guidata(hObject, handles);

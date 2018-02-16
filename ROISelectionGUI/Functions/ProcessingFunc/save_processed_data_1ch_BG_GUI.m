@@ -3,9 +3,10 @@ function save_processed_data_1ch_BG_GUI(in)
 
 fileloc = in.fileloc;
 
-curDir = pwd;
+[~, imageNum] = fileparts(in.fileloc);
+currPath = fullfile(handles.foldername,imageNum);
+cd(currPath);
 
-cd(in.fileloc);
 
 strct=in;
 if(isfield(in,'ch1'))

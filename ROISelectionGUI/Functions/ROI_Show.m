@@ -3,11 +3,12 @@ function  ROI_Show(in, maskFileNo, handles)
 %% Create a colored map of ROIs
 nframes = in.xml.frames;
 
-curDir = pwd;
-cd(in.fileloc);
+[~, imageNum] = fileparts(in.fileloc);
+currPath = fullfile(handles.foldername,imageNum);
+cd(currPath);
 
 load(sprintf('curMasks%d.mat',maskFileNo));
-cd(curDir);
+
 
 NMasks = length(masks);
 
