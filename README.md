@@ -24,10 +24,12 @@ setupGUI.m
 
 ## Current Problems about GUI ##
 
-1) Figure colouring can cause problems in different matlab versions. Make a logical figure colouring especially when the masks are being plotted and the colormaps are being generated.
+1) Figure colouring can cause problems in different matlab versions. Make a logical figure colouring especially when the masks are being plotted and the colormaps are being generated. --SOLVED??--
 
 2) Auto numerate when using different ROI numbers than previous masks
 
 3) During setup a function should be added to understand the data naming structure of the user
 
 4) Selection of ROI selection method should be more logical (clicking one and unclicking one etc.) since it can lead to problems when the last action was to unclick one 
+
+5) While applying a mask from a previous image it can only apply mask1 so this should also be flexible

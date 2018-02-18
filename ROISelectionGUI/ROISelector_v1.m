@@ -62,6 +62,7 @@ try
     handles.data_folder = data_folder ;
     handles.Pdata_folder = Pdata_folder ;
     handles.Path_folder = pathName ;
+    
 catch error
     errordlg('User folder information was not found please run the GUI Setup')
 end
@@ -165,6 +166,7 @@ end
 
 
 % --- Executes on button press in pushbutton8.
+% Loading image data and previewing the average image
 function pushbutton8_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -320,6 +322,7 @@ function pushbutton11_ButtonDownFcn(hObject, eventdata, handles)
 
 
 % --- Executes on button press in pushbutton13.
+% For collecting pData to the pre-defined pData folder
 function pushbutton13_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton13 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -362,30 +365,6 @@ function popupmenu1_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu1 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu1
 
-
-% --- Executes during object creation, after setting all properties.
-% FOR SELECTING CELL TYPES
-function popupmenu1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on slider movement.
-% FOR THRESHOLD VALUE
-function slider2_Callback(hObject, eventdata, handles)
-% hObject    handle to slider2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'Value') returns position of slider
-%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 
 
 % --- Executes during object creation, after setting all properties.

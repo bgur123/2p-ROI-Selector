@@ -40,19 +40,12 @@ end
 reset(handles.showAxes);
 imageROI = imshow(AV,[],'parent',handles.showAxes);
 % Important for getting a gray average image and not colored since the
-% function we used for getting a colormap for masks sets the color for the
-% image to 'lines'
+% function we used for getting a colormap for masks sets the col
 colormap(handles.showAxes,'gray');
-
-% Hold to plot both masks and average image together
 hold(handles.showAxes,'on');
-
-%Plotting the masks
 h = imshow(flipud(CMask),'parent',handles.showAxes);
-
-%Numbering the masks
 for iMask = 1:NMasks
-    [a b] = find(masks{iMask},1,'first');
+    [a b] = find(masks{iMask},1,'first')
     if exist('cellNumber')
         plotText = sprintf('%d',cellNumber(iMask));
         text(b,a,plotText,'FontSize',24,'Color','r','Parent',handles.showAxes)
@@ -61,7 +54,7 @@ for iMask = 1:NMasks
 
 end
 
-% Making masks transparent so that you can see the average image too
+
 set(h,'AlphaData',0.3);
 if exist('layer')
     title(sprintf('Layer: %d, Mask file: %d ',layer, maskFileNo),'Parent',handles.showAxes);

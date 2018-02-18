@@ -23,7 +23,12 @@ else
     AV = squeeze(sum(in.ch1a,3))/nframes; % The average current image for ch1
 end
 cla(handles.ROIaxes, 'reset')
+
 imageROI = imshow(AV,[],'parent',handles.ROIaxes);
+% Important for getting a gray average image and not colored since the
+% function we used for getting a colormap for masks sets the color for the
+% image to 'lines'
+colormap(handles.ROIaxes,'gray');
 
 hold(handles.ROIaxes,'on');
 h = imshow(flipud(CMask),'parent',handles.ROIaxes);
