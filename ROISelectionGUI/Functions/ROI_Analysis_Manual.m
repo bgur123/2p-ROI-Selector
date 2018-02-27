@@ -100,7 +100,7 @@ else
 end
 save(sprintf('curMasks%d',ind),'masks','NMask','nMasks','cellNumber','layer');
 fprintf('saved curMasks%d',ind);
-cd(curDir);
+cd(currPath);
 
 %% Generate ratio signals from all regions of interest - aligned data
    
@@ -307,4 +307,4 @@ for m = 1:nMasks
     disp(sprintf('%d \t %0.2g+/-%0.3g \t %0.2g+/-%0.3g \t %0.3g \t %0.3g',m,noise(1,1),noise(2,1),mean(ndSig),std(ndSig),std(sdSig),std(sdSig)/std(ndSig)));
 end
 
-cd(curDir)
+cd(currPath)

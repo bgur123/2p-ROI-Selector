@@ -4,7 +4,9 @@ function out = ROI_Analysis_Prev_Mask(in,handles)
 %% ------- Selecting the previous mask -------
 
 % Selecting the image path
-curDir = pwd;
+[~, imageNum] = fileparts(in.fileloc);
+curDir = fullfile(handles.foldername,imageNum);
+cd(curDir);
 
 imageStr = sprintf('Image %d',handles.previousMaskImage);
 targetMaskDir = fullfile(handles.foldername ,imageStr);

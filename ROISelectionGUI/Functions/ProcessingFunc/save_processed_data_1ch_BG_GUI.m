@@ -1,4 +1,4 @@
-function save_processed_data_1ch_BG_GUI(in)
+function save_processed_data_1ch_BG_GUI(in, handles)
 
 
 fileloc = in.fileloc;
@@ -24,4 +24,4 @@ pathroot = pathroot((f+1):end);
 flyroot = in.dataID;
 save([flyroot '_' pathroot '_pData.mat'],'strct');
 
-cd(curDir);
+cd(currPath);

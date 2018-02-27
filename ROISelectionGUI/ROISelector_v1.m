@@ -213,7 +213,7 @@ function pushbutton9_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 out = FFFlash_res_display_BG_GUI(handles.Ratios, 2);
-save_processed_data_1ch_BG_GUI(out);%
+save_processed_data_1ch_BG_GUI(out, handles);%
 d = dir('_stimulus_*');
 fid = fopen(d.name,'r');
 currline = fgetl(fid);
