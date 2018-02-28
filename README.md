@@ -1,12 +1,12 @@
-# GUI for ROI selection ## Under development by Burak Gür
+# GUI for ROI selection - Under development by Burak Gür
 This is a Graphical User Interface (GUI) for selecting Regions of Interest (ROI) within the 2-photon images. 
 
-# Includes a setup function for storing necessary folder paths
+## Includes a setup function for storing necessary folder paths
 setupGUI.m
 
-# All needed functions are included in the folder
+## All needed functions are included in the folder
 
-# The script started in Summer 2017 and its functions include:
+## Functions include:
 -Manual selection of ROIs
 -Manual or automatic numbering of ROIs
 -Manual numbering of layers based on visual inspection
@@ -22,7 +22,7 @@ setupGUI.m
 -Saving data in the Silies lab commonly used format pData
 -Transferring the saved pData to a master folder
 
-## Current Problems about GUI ##
+## Current Problems about GUI
 
 1) Figure colouring can cause problems in different matlab versions. Make a logical figure colouring especially when the masks are being plotted and the colormaps are being generated. --SOLVED??--
 
