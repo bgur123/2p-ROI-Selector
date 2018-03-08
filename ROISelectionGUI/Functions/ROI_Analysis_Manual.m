@@ -111,8 +111,6 @@ out.masks = masks;
 out.NMask = NMask;
 out.avSignal1 = zeros(nMasks,nframes);
 out.dSignal1 = zeros(nMasks,nframes);
-% out.avSignal2 = zeros(nMasks,nframes);
-% out.dSignal2 = zeros(nMasks,nframes);
 out.ratio = zeros(nMasks,nframes);
 out.dRatio = zeros(nMasks,nframes);
 
