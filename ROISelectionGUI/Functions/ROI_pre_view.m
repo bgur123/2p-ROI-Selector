@@ -6,8 +6,8 @@ nframes = in.xml.frames;
 %Average image for channel1
 AV = squeeze( sum( in.ch1a,3 ) ) / nframes; % The average image for ch1
 
-% Plot the average image
-imagesc( AV , 'parent' , handles.ROIaxes );
+% Plot the average image normalized
+imshow( AV./max(AV(:)) , 'parent' , handles.ROIaxes );
 
 colormap gray;
 

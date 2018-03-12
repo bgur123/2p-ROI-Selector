@@ -22,7 +22,7 @@ function varargout = ROISelector_v1(varargin)
 
 % Edit the above text to modify the response to help ROISelector_v1
 
-% Last Modified by GUIDE v2.5 08-Mar-2018 15:38:12
+% Last Modified by GUIDE v2.5 12-Mar-2018 18:34:06
 
 % Begin initialization code - DO NOT EDIT
 
@@ -146,6 +146,7 @@ function edit1_Callback(hObject, eventdata, handles)
 %Gets the image number for ROI selection
 imageNumber = str2double(get(hObject, 'String'));
 handles.imageNumber = imageNumber;
+set(handles.ROIstatusAxes,'Color',[1 0 0])
 
 %Converts it to string for display
 handles.imageNumberName = sprintf('Image %d',imageNumber);
@@ -172,9 +173,8 @@ imageData = ROI_Selector(handles.foldername,handles.imageNumber);
 handles.imageData = imageData;
 ROI_pre_view(imageData.out, handles)
 clear handles.Ratios
-msgbox(...
-    'Image data is ready,  please select the option you want to use for ROI selection and run selection')
-
+set(handles.ROIstatusAxes,'Color',[0 1 0])
+set(handles.statusAxes,'Color',[1 0 0])
 
 guidata(hObject, handles);
 
@@ -240,6 +240,7 @@ function edit2_Callback(hObject, eventdata, handles)
 secondImageNumber = str2double(get(hObject, 'String'));
 handles.secondImageNumber = secondImageNumber;
 guidata(hObject, handles);
+set(handles.ROISelstatusAxes,'Color',[1 0 0])
 % Hints: get(hObject,'String') returns contents of edit2 as text
 %        str2double(get(hObject,'String')) returns contents of edit2 as a double
 
@@ -263,6 +264,7 @@ function pushbutton10_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 secondImageData = ROI_Selector(handles.foldername,handles.secondImageNumber);
+set(handles.ROISelstatusAxes,'Color',[0 1 0])
 clear handles.secondImageData
 handles.secondImageData = secondImageData;
 maskFileNo = handles.secondImageMaskNumber;
@@ -413,6 +415,7 @@ switch handles.SelectionType
             ROI_Analysis_Prev_Mask( handles.imageData.out , handles );
 
 end
+set(handles.statusAxes,'Color',[0 1 0]);
 guidata(hObject, handles);
        
     
@@ -441,6 +444,7 @@ reset(handles.ROIaxes);
 cla(handles.ROIaxes)
 set(handles.ROIaxes,'XColor','none','YColor','none','TickDir','out')
 grid on;
+set(handles.ROIstatusAxes,'Color',[1 0 0])
 
 guidata(hObject, handles);
 
@@ -511,6 +515,9 @@ function pushbutton19_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 handles.currentMaskData = ...
             current_mask_data( handles.imageData.out , handles );
+        
+set(handles.statusAxes,'Color',[0 1 0])
+
 FFFlash_res_display_BG_GUI(handles.currentMaskData, 2);
 
 function edit7_Callback(hObject, eventdata, handles)
@@ -588,3 +595,78 @@ function popupmenu2_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+contents = cellstr(get(hObject,'String'));
+handles.SelectionType = contents{get(hObject,'Value')};
+guidata(hObject, handles);
+
+% --- Executes during object creation, after setting all properties.
+% -- ANALYSIS STATUS FOR PLOTTING
+function axes11_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes11 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+handles.statusAxes = gca;
+set(handles.statusAxes,'XColor','none','YColor','none','TickDir','out')
+set(handles.statusAxes,'Color',[1 0 0])
+
+
+guidata(hObject, handles);
+% Hint: place code in OpeningFcn to populate axes11
+
+
+% --- Executes during object creation, after setting all properties.
+function axes12_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes12 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: place code in OpeningFcn to populate axes12
+handles.ROIstatusAxes = gca;
+set(handles.ROIstatusAxes,'XColor','none','YColor','none','TickDir','out')
+set(handles.ROIstatusAxes,'Color',[1 0 0])
+
+
+guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function axes14_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes14 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: place code in OpeningFcn to populate axes14
+handles.ROISelstatusAxes = gca;
+set(handles.ROISelstatusAxes,'XColor','none','YColor','none','TickDir','out')
+set(handles.ROISelstatusAxes,'Color',[1 0 0])
+
+
+guidata(hObject, handles);
+
+
+% --- Executes on selection change in popupmenu3.
+function popupmenu3_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu3 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu3
+contents = cellstr(get(hObject,'String'));
+handles.FigureType = contents{get(hObject,'Value')};
+guidata(hObject, handles);
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu3_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+contents = cellstr(get(hObject,'String'));
+handles.FigureType = contents{get(hObject,'Value')};
+guidata(hObject, handles);

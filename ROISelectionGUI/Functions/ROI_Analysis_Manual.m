@@ -1,11 +1,21 @@
 function out = ROI_Analysis_Manual(in,handles)
 
-%% Checks if there's the baseline
+%% Checks options
 if isfield(in, 'BaseLine')
     baselineExist = 1;
 else
     baselineExist = 0;
 end
+
+
+% Changing the axis to an external figure upon user request in GUI
+if strcmp(handles.FigureType,'Free figures')
+    figure
+    realROIaxes = handles.ROIaxes;
+    handles.ROIaxes = gca;
+end
+
+    
 
 
 %% ------- Creating an average image from ch1a (aligned frames) -------
@@ -23,7 +33,7 @@ if baselineExist
 end
 %% -------------- ROI selection and saving --------------
 
-
+    
 imagesc( AV , 'parent' , handles.ROIaxes );
 
 colormap gray;
@@ -52,7 +62,7 @@ while ( ~done )
 end
 nMasks = ROIindex - 1 ;
 
-%% Number masks
+% ------- Numbering ROIs -------
 
 maskNumbering = questdlg('Would you like to auto numerate ROIs?');
 
@@ -83,8 +93,7 @@ switch maskNumbering
 end
 allGood = questdlg('All good?');
 
-% ------- Save the masks and select background region if no previous exist --------
-
+% ------- Select background region --------
 [~, imageNum] = fileparts(in.fileloc);
 currPath = fullfile(handles.foldername,imageNum);
 cd(currPath);
@@ -98,7 +107,25 @@ if (ind == 1)
 else
     load('curMasks1.mat','NMask');
 end
-save(sprintf('curMasks%d',ind),'masks','NMask','nMasks','cellNumber','layer');
+
+% ------- Adding categories --------
+
+for iMask = 1:nMasks %Seb: the for loop displays all the ROI's numbers
+         [a ,b] = find(masks{iMask},1,'first');
+            
+          plotText = sprintf('%d',cellNumber(iMask));
+          text(b,a,plotText,'FontSize',24,'Color','r','Parent',handles.ROIaxes)
+end
+                 
+numberOfCategories = inputdlg( 'Enter the number of diferent categories for your ROIs' );
+numberOfCategories = str2num( numberOfCategories{ 1 } );
+for iCategory = 1:numberOfCategories
+    categoryLabel{iCategory} = inputdlg( 'Enter the name of the category' );
+    ROIsCategory{iCategory} = inputdlg( 'Enter the cells numbers belonging to that category (ea., 1:5)' );
+end
+
+% ------- Saving data --------
+save(sprintf('curMasks%d',ind),'masks','NMask','nMasks','cellNumber','layer','categoryLabel','ROIsCategory');
 fprintf('saved curMasks%d',ind);
 cd(currPath);
 
@@ -109,6 +136,9 @@ out.layer = layer;
 out.cellNumbers = cellNumber; 
 out.masks = masks;
 out.NMask = NMask;
+out.categoryLabels = categoryLabel;
+out.ROIsCategory = ROIsCategory;
+
 out.avSignal1 = zeros(nMasks,nframes);
 out.dSignal1 = zeros(nMasks,nframes);
 out.ratio = zeros(nMasks,nframes);
@@ -306,3 +336,9 @@ for m = 1:nMasks
 end
 
 cd(currPath)
+
+% Taking back the original axis
+if strcmp(handles.FigureType,'Free figures')
+    handles.ROIaxes = realROIaxes;
+end
+

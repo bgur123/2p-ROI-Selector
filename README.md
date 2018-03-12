@@ -10,6 +10,7 @@ setupGUI.m
 -Manual or automatic numbering of ROIs
 
 -Manual numbering of layers based on visual inspection
+	-Can be done in GUI integrated or external figures
 
 -Transferring ROI masks from one image to another image within same fly dataset
 -Options include:
@@ -30,3 +31,5 @@ setupGUI.m
 1) Auto numerate when using different ROI numbers than previous masks
 
 2) During setup a function should be added to understand the data naming structure of the user
+
+3) GUI size should be adjusted automatically from computer to computer FIXED??

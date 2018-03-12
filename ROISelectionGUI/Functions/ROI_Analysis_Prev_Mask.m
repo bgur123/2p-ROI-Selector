@@ -13,7 +13,13 @@ targetMaskDir = fullfile(handles.foldername ,imageStr);
 cd(targetMaskDir);
 
 % Loads the desired mask number from that image
-load(sprintf('curMasks%d.mat',num2str(handles.prevMaskNumROIsel)_);
+try
+    load(sprintf('curMasks%d.mat',handles.prevMaskNumROIsel));
+catch error
+    errordlg(sprintf('No masks available for %s', imageStr))
+    return
+    
+end
 % Goes back to the folder of the image of interest
 cd(curDir);
 
@@ -193,7 +199,6 @@ nframesBaseLine = size(in.BaseLine, 3);
 AV = squeeze(sum(in.ch1a,3))/nframes; %Average image
 BG = squeeze(sum(in.BaseLine,3))/nframesBaseLine; % Seb: The average image for BaseLine sequence
 
-curDir = pwd;
 cd(curDir); 
 d = dir('curMasks*.mat');
 ind = length(d)+1;
@@ -204,7 +209,8 @@ if (ind == 1)
 else
     load('curMasks1.mat','NMask');
 end
-save(sprintf('curMasks%d',ind),'masks','NMask','nMasks','cellNumber','layer');
+
+save(sprintf('curMasks%d',ind),'masks','NMask','nMasks','cellNumber','layer','categoryLabel','ROIsCategory');
 fprintf('saved curMasks%d',ind);
 cd(curDir);
 
@@ -215,6 +221,9 @@ out.layer = layer;
 out.cellNumbers = cellNumber; 
 out.masks = masks;
 out.NMask = NMask;
+out.categoryLabels = categoryLabel;
+out.ROIsCategory = ROIsCategory;
+
 out.avSignal1 = zeros(nMasks,nframes);
 out.dSignal1 = zeros(nMasks,nframes);
 % out.avSignal2 = zeros(nMasks,nframes);
