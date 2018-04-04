@@ -8,7 +8,11 @@ function out = ROI_Analysis_Prev_Mask(in,handles)
 curDir = fullfile(handles.foldername,imageNum);
 cd(curDir);
 
-imageStr = sprintf('Image %d',handles.previousMaskImage);
+% Understanding the folder name structure for flexibility
+beforeNum = regexp(imageNum, '\d','split');
+beforeNumStr = beforeNum{1};
+imageStr = [beforeNumStr num2str(handles.previousMaskImage)];
+
 targetMaskDir = fullfile(handles.foldername ,imageStr);
 cd(targetMaskDir);
 

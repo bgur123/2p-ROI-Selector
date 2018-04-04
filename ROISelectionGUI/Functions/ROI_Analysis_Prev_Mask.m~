@@ -1,136 +1,229 @@
-function out = ROI_Analysis_Manual(in,handles)
+function out = ROI_Analysis_Prev_Mask(in,handles)
 
-%% Checks options
-if isfield(in, 'BaseLine')
-    baselineExist = 1;
+
+%% ------- Selecting the previous mask -------
+
+% Selecting the image path
+[~, imageNum] = fileparts(in.fileloc);
+curDir = fullfile(handles.foldername,imageNum);
+cd(curDir);
+
+% Determining if there's a space between Image and number
+beforeNum = regexp(imageNum, '\d','split');
+beforeNumStr = 
+
+spaced = ~isempty(find(isspace(imageNum)));
+
+if spaced
+    imageStr = sprintf('Image %d',handles.previousMaskImage);
 else
-    baselineExist = 0;
+    imageStr = sprintf('Image%d',handles.previousMaskImage);
 end
 
+targetMaskDir = fullfile(handles.foldername ,imageStr);
+cd(targetMaskDir);
 
-% Changing the axis to an external figure upon user request in GUI
-if strcmp(handles.FigureType,'Free figures')
-    figure
-    realROIaxes = handles.ROIaxes;
-    handles.ROIaxes = gca;
-end
-
+% Loads the desired mask number from that image
+try
+    load(sprintf('curMasks%d.mat',handles.prevMaskNumROIsel));
+catch error
+    errordlg(sprintf('No masks available for %s', imageStr))
+    return
     
-
-
-%% ------- Creating an average image from ch1a (aligned frames) -------
-
-nframes = in.xml.frames;
-if baselineExist
-    nframesBaseLine = size(in.BaseLine, 3);
 end
+% Goes back to the folder of the image of interest
+cd(curDir);
 
-%Average image for channel1 and BaseLine channel
-AV = squeeze( sum( in.ch1a,3 ) ) / nframes; % The average image for ch1
-
-if baselineExist
-    BG = squeeze(sum(in.BaseLine,3))/nframesBaseLine; % The average image for BaseLine sequence
-end
 %% -------------- ROI selection and saving --------------
 
-    
-imagesc( AV , 'parent' , handles.ROIaxes );
 
-colormap gray;
+layerCellChoice = questdlg('Add numbering of layer and cells as the previous image?');
 
-%Storing layer number information within fly to match ROIs in same layers
-%with different stimuli
-layer = inputdlg( 'Enter the layer number within this fly' );
-layer = str2num( layer{ 1 } );
-titleString = sprintf( 'Layer: %d, Press ENTER after selecting the last ROI'...
-    , layer );
-title( titleString );
-
-
-% ------- Selecting ROIs manually -------
-
-done = 0; 
-ROIindex = 1;
-axes(handles.ROIaxes)
-while ( ~done )
-    
-    masks{ ROIindex } = roipoly;
-    alphamask( masks{ ROIindex } , [1 1 1] , 0.33 );
-    hold on ;
-    done = waitforbuttonpress;
-    
-
-    ROIindex = ROIindex + 1 ;
-end
-nMasks = ROIindex - 1 ;
-
-% ------- Numbering ROIs -------
-
-maskNumbering = questdlg('Would you like to auto numerate ROIs?');
-
-switch maskNumbering
+switch layerCellChoice
     case 'Yes'
-        cellNumber = 1:nMasks;
-        for iMask = 1:nMasks
-            [a ,b] = find(masks{iMask},1,'first');
-            
-            plotText = sprintf('%d',cellNumber(iMask));
-            text(b,a,plotText,'FontSize',24,'Color','r','Parent',handles.ROIaxes)
-        end
-        
         
     case 'No'
-        for iMask = 1:nMasks
-            [a ,b] = find(masks{iMask},1,'first');
+        clear layer
+        clear cellNumber
+        layer = inputdlg( 'Enter the layer number within this fly' );
+        layer = str2double(layer{1});
+end
 
-            plotText = '-->';
-            t = text(b,a,plotText,'FontSize',24,'Color','r','Parent',handles.ROIaxes);
 
-            number = inputdlg('Please enter the current ROI number');
-            number = str2double(number{1});
-            set(t, 'String', number)
-            cellNumber(iMask) = number;
+% Showing previous mask
 
+show_mask(masks, in, handles)
+% MASK SHOWING COMPLETE
+NMasks = length(masks);
+
+% Numbering the ROIs
+for iMask = 1:NMasks
+    [a b] = find(masks{iMask},1,'first')
+    if exist('cellNumber') && strcmp(layerCellChoice,'Yes')
+        plotText = sprintf('%d',cellNumber(iMask));
+        text(b,a,plotText,'FontSize',24,'Color','r','Parent',handles.ROIaxes)
+    elseif strcmp(layerCellChoice,'No')
+        plotText = '-->';
+        t = text(b,a,plotText,'FontSize',24,'Color','r','Parent',handles.ROIaxes);
+        
+        number = inputdlg('Please enter the current ROI number');
+        number = str2double(number{1});
+        set(t, 'String', number)
+        cellNumber(iMask) = number;
+    end
+    
+
+end
+
+if exist('layer')
+    title(sprintf('Layer: %d',layer),'Parent',handles.ROIaxes);
+end
+% ------- Want to move the whole mask?  -------
+MoveMask = questdlg('Would you like to move whole mask together?');
+
+switch MoveMask
+    case 'Yes'
+        masks = mask_mover(masks, in, handles);
+        for iMask = 1:length(masks)
+            [aaa, bbb] = find(masks{iMask},1,'first');
+
+            plotText = sprintf('%d',cellNumber(iMask));
+                text(bbb,aaa,plotText,'FontSize',24,'Color','r','Parent',handles.ROIaxes)
         end
 end
-allGood = questdlg('All good?');
+% ------- Want to modify/delete ROIs?  -------
 
-% ------- Select background region --------
-[~, imageNum] = fileparts(in.fileloc);
-currPath = fullfile(handles.foldername,imageNum);
-cd(currPath);
+moveROI = questdlg('Would you like to modify or remove ROIs?');
+x1 = 1;
+switch moveROI
+    case 'Yes'
+        
+        
+        
+        while ( ~isempty(x1) )
+            title({'Press left click to modify ROI, right click to remove existing ROI';...
+                'Press enter to exit'},'fontweight','bold');
+            drawnow;
+            [x1, y1, button] = ginput(1);
+            y1 = round(y1);
+            x1 = round(x1);%Finding the clicked pixel
+            
+            if button == 1
+                % TO MODIFY
+                xlabel({'Redraw the ROI'},'fontweight','bold');
+                drawnow;
+                ROIFound = 0;
+                for indMask = 1:length(masks)
+                    if masks{indMask}(y1, x1) %If pixel selected is in the mask
+                        masks{indMask} = [];
+                        masks{indMask} = roipoly; %Select the new mask
+                        
+                        ROIFound = 1;
+                    end
+                end
+                if ~ROIFound
+                    warning('ROI not found, please click on an existing ROI')
+                    
+                end
+                
+            elseif button == 3
+                % TO DELETE
+                title({'Deleting the ROI'},'fontweight','bold');
+                drawnow;
+                ROIFound = 0;
+                for indMask = 1:length(masks)
+                  
+                    if masks{indMask}(y1, x1) %If pixel selected is in the mask
+                        masks{indMask} = [];
+                        cellNumber(indMask) = NaN; 
+                        ROIFound = 1;
+                        
+                        
+                    end
+                end
+                %create new masks by deleting one ROI
+                nonEmptyIdx = find(~cellfun('isempty', masks));
+                masks = masks(nonEmptyIdx);
 
+                %create new cell numbers by deleting one ROI number
+                nonEmptyCellIdx = find(~isnan(cellNumber)); 
+                cellNumber = cellNumber(nonEmptyCellIdx);
+                         
+                if ~ROIFound
+                    warning('ROI not found, please click on an existing ROI')
+                end
+                     
+            end
+            show_mask(masks, in, handles)
+            for iMask = 1:length(masks)
+                [aa, bb] = find(masks{iMask},1,'first');
+               
+                plotText = sprintf('%d',cellNumber(iMask));
+                    text(bb,aa,plotText,'FontSize',24,'Color','r','Parent',handles.ROIaxes)
+            end
+            
+        end
+end
+
+
+
+
+% ------- Want to add more ROIs?  -------
+
+ROIChoice = questdlg('Would you like to add additional ROIs?');
+
+switch ROIChoice
+    case 'Yes'
+        done = 0; 
+        ROIindex = 1;
+        while ( ~done )
+            masks{ end + 1 } = roipoly;
+            alphamask( masks{ end } , [1 1 1] , 0.33 );
+            hold on ;
+            done = waitforbuttonpress;
+            %cellNumber
+            if exist( 'currentCellNumber' )
+                inputString = sprintf( 'Enter the ROI number -- Previous number: %d',...
+                    currentCellNumber );
+            else
+                inputString ='Enter the ROI number'
+            end
+            currentCellNumber = inputdlg( inputString );
+            currentCellNumber = str2num( currentCellNumber{1} );
+            cellNumber( end + 1) = currentCellNumber;
+            [ xx , yy ] = find( masks{ end }, 1 , 'first' )
+            plotText = sprintf( '%d' , currentCellNumber );
+            hold on ;
+            text( yy , xx , plotText , 'FontSize' , 24 , 'Color' , 'r' )
+
+
+            ROIindex = ROIindex + 1 ;
+        end
+end
+nMasks = length(masks);
+
+
+% ------- Save the masks and select background region if no previous exist --------
+nframes = in.xml.frames;
+nframesBaseLine = size(in.BaseLine, 3);
+
+AV = squeeze(sum(in.ch1a,3))/nframes; %Average image
+BG = squeeze(sum(in.BaseLine,3))/nframesBaseLine; % Seb: The average image for BaseLine sequence
+
+cd(curDir); 
 d = dir('curMasks*.mat');
 ind = length(d)+1;
 if (ind == 1)
-    imagesc(AV, 'parent' , handles.ROIaxes );colormap gray;
-    axes(handles.ROIaxes)
+    imagesc(AV);colormap gray;
     title('select background region');
     NMask = roipoly;
 else
     load('curMasks1.mat','NMask');
 end
 
-% ------- Adding categories --------
-
-for iMask = 1:nMasks %Seb: the for loop displays all the ROI's numbers
-         [a ,b] = find(masks{iMask},1,'first');
-            
-          plotText = sprintf('%d',cellNumber(iMask));
-          text(b,a,plotText,'FontSize',24,'Color','r','Parent',handles.ROIaxes)
-end
-                 
-numberOfCategories = inputdlg( 'Enter the number of diferent categories for your ROIs' );
-numberOfCategories = str2num( numberOfCategories{ 1 } );
-for iCategory = 1:numberOfCategories
-    categoryLabel{iCategory} = inputdlg( 'Enter the name of the category' );
-    ROIsCategory{iCategory} = inputdlg( 'Enter the cells numbers belonging to that category (ea., 1:5)' );
-end
-
-% ------- Saving data --------
 save(sprintf('curMasks%d',ind),'masks','NMask','nMasks','cellNumber','layer','categoryLabel','ROIsCategory');
 fprintf('saved curMasks%d',ind);
-cd(currPath);
+cd(curDir);
 
 %% Generate ratio signals from all regions of interest - aligned data
    
@@ -144,27 +237,23 @@ out.ROIsCategory = ROIsCategory;
 
 out.avSignal1 = zeros(nMasks,nframes);
 out.dSignal1 = zeros(nMasks,nframes);
+% out.avSignal2 = zeros(nMasks,nframes);
+% out.dSignal2 = zeros(nMasks,nframes);
 out.ratio = zeros(nMasks,nframes);
 out.dRatio = zeros(nMasks,nframes);
 
-if baselineExist
-    out.avSignalBG = zeros(nMasks,nframesBaseLine);
-    out.dSignalBG = zeros(nMasks,nframesBaseLine);
-    out.ratioBG = zeros(nMasks,nframesBaseLine);
-    out.dRatioBG = zeros(nMasks,nframesBaseLine);
-end
+out.avSignalBG = zeros(nMasks,nframesBaseLine);
+out.dSignalBG = zeros(nMasks,nframesBaseLine);
+out.ratioBG = zeros(nMasks,nframesBaseLine);
+out.dRatioBG = zeros(nMasks,nframesBaseLine);
 
 if(~isfield(in,'AV1'))
     AV1 = squeeze(sum(in.ch1a,3))/nframes; % The average image for ch1
+    BG1 = squeeze(sum(in.BaseLine,3))/nframesBaseLine; % seb: The average image for Baseline
+%     AV2 = squeeze(sum(in.ch2a,3))/nframes; % The average image for ch1
     out.AV1 = AV1;
-    if baselineExist
-        BG1 = squeeze(sum(in.BaseLine,3))/nframesBaseLine; % seb: The average image for Baseline
-        out.BG1 = BG1;
-    end
-    %     AV2 = squeeze(sum(in.ch2a,3))/nframes; % The average image for ch1
-    
-   
-    %     out.AV2 = AV2;
+    out.BG1 = BG1;
+%     out.AV2 = AV2;
 end
 
 
@@ -206,30 +295,27 @@ end
 sNmask = sum(sum(NMask));
 Nmaski = find(NMask);
 
-if baselineExist
-    for ind = 1:nframesBaseLine
-        B = double(squeeze(in.BaseLine(:,:,ind)));
+for ind = 1:nframesBaseLine
+    B = double(squeeze(in.BaseLine(:,:,ind)));
+    
+    for k = 1:nMasks
 
-        for k = 1:nMasks
-
-            masked = B(masksi{k});
-            Nmasked = B(Nmaski);
-            out.avSignalBG(k,ind) = (sum(masked))./smask(k);
-            out.dSignalBG(k,ind) = out.avSignalBG(k,ind) - (sum(Nmasked))./sNmask;
-
-
-        end
+        masked = B(masksi{k});
+        Nmasked = B(Nmaski);
+        out.avSignalBG(k,ind) = (sum(masked))./smask(k);
+        out.dSignalBG(k,ind) = out.avSignalBG(k,ind) - (sum(Nmasked))./sNmask;
+        
+      
     end
 end
+
 
 for i = 1:nMasks
     out.ratio(i,:) = out.avSignal1(i,:); %./out.avSignal2(i,:);
     out.dRatio(i,:) = out.dSignal1(i,:); %./out.dSignal2(i,:);
     
-    if baselineExist
-        out.ratioBG(i,:) = out.avSignalBG(i,:); %./out.avSignal2(i,:);
-        out.dRatioBG(i,:) = out.dSignalBG(i,:); %./out.dSignal2(i,:);
-    end
+    out.ratioBG(i,:) = out.avSignalBG(i,:); %./out.avSignal2(i,:);
+    out.dRatioBG(i,:) = out.dSignalBG(i,:); %./out.dSignal2(i,:);
 end
 
 %% Bleaching analysis
@@ -338,10 +424,4 @@ for m = 1:nMasks
     disp(sprintf('%d \t %0.2g+/-%0.3g \t %0.2g+/-%0.3g \t %0.3g \t %0.3g',m,noise(1,1),noise(2,1),mean(ndSig),std(ndSig),std(sdSig),std(sdSig)/std(ndSig)));
 end
 
-cd(currPath)
-
-% Taking back the original axis
-if strcmp(handles.FigureType,'Free figures')
-    handles.ROIaxes = realROIaxes;
-end
-
+cd(curDir)

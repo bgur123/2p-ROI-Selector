@@ -22,7 +22,7 @@ function varargout = ROISelector_v1(varargin)
 
 % Edit the above text to modify the response to help ROISelector_v1
 
-% Last Modified by GUIDE v2.5 12-Mar-2018 18:34:06
+% Last Modified by GUIDE v2.5 12-Mar-2018 19:11:15
 
 % Begin initialization code - DO NOT EDIT
 
@@ -212,7 +212,7 @@ function pushbutton9_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton9 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-out = FFFlash_res_display_BG_GUI(handles.Ratios, 2);
+out = FFFlash_res_display_BG_GUI(handles.Ratios, 2, handles);
 save_processed_data_1ch_BG_GUI(out, handles);%
 d = dir('_stimulus_*');
 fid = fopen(d.name,'r');
@@ -518,7 +518,7 @@ handles.currentMaskData = ...
         
 set(handles.statusAxes,'Color',[0 1 0])
 
-FFFlash_res_display_BG_GUI(handles.currentMaskData, 2);
+FFFlash_res_display_BG_GUI(handles.currentMaskData, 2, handles);
 
 function edit7_Callback(hObject, eventdata, handles)
 % hObject    handle to edit7 (see GCBO)
@@ -670,3 +670,26 @@ end
 contents = cellstr(get(hObject,'String'));
 handles.FigureType = contents{get(hObject,'Value')};
 guidata(hObject, handles);
+
+
+% --- Executes on button press in pushbutton20.
+function pushbutton20_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton20 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+cd(handles.foldername)
+[handles.video_file_name,handles.ImagePathName] = uigetfile({'*.mp4'},'Select the video file');
+cd(handles.ImagePathName)
+implay(handles.video_file_name)
+
+guidata(hObject, handles);
+
+% --- If Enable == 'on', executes on mouse press in 5 pixel border.
+% --- Otherwise, executes on mouse press in 5 pixel border or over pushbutton20.
+% VIDEO PLAYER
+function pushbutton20_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to pushbutton20 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+

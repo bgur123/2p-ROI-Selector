@@ -1,4 +1,4 @@
-function out = FFFlash_res_display_BG_GUI(in,dur)
+function out = FFFlash_res_display_BG_GUI(in,dur, handles)
 %% Find stimulus timing - modify after clean-up script is written
 
 out = in;
@@ -14,18 +14,28 @@ dmask = [0; dmask];
 
 nMasks = length(in.masks);
 
+[~, imageNum] = fileparts(in.fileloc);
+[~, flyID] = fileparts(handles.foldername);
+flyImageID = [flyID '-' imageNum];
+
+curDir = fullfile(handles.foldername,imageNum);
+cd(curDir);
+
+
 
 for i = 1:nMasks
-    figure(1);
+    f1= figure(1);
     cm = colormap('lines');
     plot((1:nframes)/fps,in.avSignal1(i,:),'color',cm(i,:));hold on;
     
 %     plot((1:nframes)/fps,in.avSignal2(i,:),'color',cm(i,:));
 end
+
 xlabel('time (sec)');
 title('Signal in region of interest - before background substraction, aligned data');
 
-figure(2); 
+
+f2 = figure(2); 
 for i = 1:nMasks
     plot((1:nframes)/fps,(in.dSignal1(i,:)/mean(in.dSignal1(i,:)))+1*(i-1),'color',max(cm(i,:),.7));hold on;
 %     plot((1:nframes)/fps,(in.dSignal2(i,:)/mean(in.dSignal2(i,:)))+1*(i-1),'color',max(cm(i,:),.7));
@@ -66,10 +76,28 @@ if(~isfield(in,'AV1'))
 else
     AV = in.AV1;
 end
-figure;imshow(flipud(AV),[]);
+f3 = figure;imshow(flipud(AV),[]);
 hold on;h = imshow(CMask);
 set(h,'AlphaData',0.5);
 title(sprintf('average aligned image at z-depth %0.5g microns',in.xml.zdepth));
+
+
+%% Saving figures
+SaveFigChoice = questdlg('Would you like to save figures?');
+switch SaveFigChoice
+    case 'Yes'
+        fig3Name = sprintf('%s Masks',flyImageID);
+        savefig(f3, fig3Name)
+        fig2Name = sprintf('%s BS Traces',flyImageID);
+        savefig(f2, fig2Name)
+        fig1Name = sprintf('%s RawTrace',flyImageID);
+        savefig(f1, fig1Name)
+        fprintf('\n Figures saved... \n')
+        
+    case 'No'
+        fprintf('\n Figures not saved... \n')
+end
+
 
 % %% Z-stack analysis
 % 
