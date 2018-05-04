@@ -1,5 +1,10 @@
 function out = ROI_Analysis_Prev_Mask(in,handles)
-
+%% Checks options
+if isfield(in, 'BaseLine')
+    baselineExist = 1;
+else
+    baselineExist = 0;
+end
 
 %% ------- Selecting the previous mask -------
 
@@ -198,10 +203,13 @@ nMasks = length(masks);
 
 % ------- Save the masks and select background region if no previous exist --------
 nframes = in.xml.frames;
-nframesBaseLine = size(in.BaseLine, 3);
+if baselineExist
+   
+    nframesBaseLine = size(in.BaseLine, 3);
+    BG = squeeze(sum(in.BaseLine,3))/nframesBaseLine; % Seb: The average image for BaseLine sequence
+end
 
 AV = squeeze(sum(in.ch1a,3))/nframes; %Average image
-BG = squeeze(sum(in.BaseLine,3))/nframesBaseLine; % Seb: The average image for BaseLine sequence
 
 cd(curDir); 
 d = dir('curMasks*.mat');
@@ -235,17 +243,22 @@ out.dSignal1 = zeros(nMasks,nframes);
 out.ratio = zeros(nMasks,nframes);
 out.dRatio = zeros(nMasks,nframes);
 
-out.avSignalBG = zeros(nMasks,nframesBaseLine);
-out.dSignalBG = zeros(nMasks,nframesBaseLine);
-out.ratioBG = zeros(nMasks,nframesBaseLine);
-out.dRatioBG = zeros(nMasks,nframesBaseLine);
+if baselineExist
+    out.avSignalBG = zeros(nMasks,nframesBaseLine);
+    out.dSignalBG = zeros(nMasks,nframesBaseLine);
+    out.ratioBG = zeros(nMasks,nframesBaseLine);
+    out.dRatioBG = zeros(nMasks,nframesBaseLine);
+end
 
 if(~isfield(in,'AV1'))
     AV1 = squeeze(sum(in.ch1a,3))/nframes; % The average image for ch1
-    BG1 = squeeze(sum(in.BaseLine,3))/nframesBaseLine; % seb: The average image for Baseline
+    if baselineExist
+        BG1 = squeeze(sum(in.BaseLine,3))/nframesBaseLine;
+        out.BG1 = BG1;% seb: The average image for Baseline
+    end
 %     AV2 = squeeze(sum(in.ch2a,3))/nframes; % The average image for ch1
     out.AV1 = AV1;
-    out.BG1 = BG1;
+   
 %     out.AV2 = AV2;
 end
 
@@ -288,17 +301,19 @@ end
 sNmask = sum(sum(NMask));
 Nmaski = find(NMask);
 
-for ind = 1:nframesBaseLine
-    B = double(squeeze(in.BaseLine(:,:,ind)));
-    
-    for k = 1:nMasks
+if baselineExist
+    for ind = 1:nframesBaseLine
+        B = double(squeeze(in.BaseLine(:,:,ind)));
 
-        masked = B(masksi{k});
-        Nmasked = B(Nmaski);
-        out.avSignalBG(k,ind) = (sum(masked))./smask(k);
-        out.dSignalBG(k,ind) = out.avSignalBG(k,ind) - (sum(Nmasked))./sNmask;
-        
-      
+        for k = 1:nMasks
+
+            masked = B(masksi{k});
+            Nmasked = B(Nmaski);
+            out.avSignalBG(k,ind) = (sum(masked))./smask(k);
+            out.dSignalBG(k,ind) = out.avSignalBG(k,ind) - (sum(Nmasked))./sNmask;
+
+
+        end
     end
 end
 
@@ -307,8 +322,11 @@ for i = 1:nMasks
     out.ratio(i,:) = out.avSignal1(i,:); %./out.avSignal2(i,:);
     out.dRatio(i,:) = out.dSignal1(i,:); %./out.dSignal2(i,:);
     
-    out.ratioBG(i,:) = out.avSignalBG(i,:); %./out.avSignal2(i,:);
-    out.dRatioBG(i,:) = out.dSignalBG(i,:); %./out.dSignal2(i,:);
+    if baselineExist
+        
+        out.ratioBG(i,:) = out.avSignalBG(i,:); %./out.avSignal2(i,:);
+        out.dRatioBG(i,:) = out.dSignalBG(i,:); %./out.dSignal2(i,:);
+    end
 end
 
 %% Bleaching analysis

@@ -30,7 +30,7 @@ for iFolder = 1:length(folder_contents)
 end
     
 % Loading the desired image path
-file = fullfile(folder_name,target_image_folder_name)
+file = fullfile(folder_name,target_image_folder_name);
 disp(file);
 
 try
@@ -46,4 +46,10 @@ end
 m = dir('data_file*');
 
 imageData = load('data_file');
-   
+
+% If imaged 2 channels by mistake change the variables
+if isfield(imageData.out,'ch2')
+    warning('2 channels found, switching the channel data')
+    imageData.out.ch1a = imageData.out.ch2a;
+end
+    

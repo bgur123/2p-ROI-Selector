@@ -170,6 +170,7 @@ function pushbutton8_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 fprintf('Visualizing ROIs')
 imageData = ROI_Selector(handles.foldername,handles.imageNumber);
+
 handles.imageData = imageData;
 ROI_pre_view(imageData.out, handles)
 clear handles.Ratios

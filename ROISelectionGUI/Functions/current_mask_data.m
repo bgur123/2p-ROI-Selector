@@ -1,6 +1,11 @@
 function out = current_mask_data(in,handles)
 
-
+%% Checks options
+if isfield(in, 'BaseLine')
+    baselineExist = 1;
+else
+    baselineExist = 0;
+end
 %% ------- Selecting the previous mask -------
 
 % Selecting the image path
@@ -37,10 +42,8 @@ nMasks = length(masks);
 
 %% Generate ratio signals from all regions of interest - aligned data
 nframes = in.xml.frames;
-nframesBaseLine = size(in.BaseLine, 3);
 
 AV = squeeze(sum(in.ch1a,3))/nframes; %Average image
-BG = squeeze(sum(in.BaseLine,3))/nframesBaseLine; % Seb: The average image for BaseLine sequence
 
 out = in;
 out.layer = layer;
@@ -54,17 +57,11 @@ out.dSignal1 = zeros(nMasks,nframes);
 out.ratio = zeros(nMasks,nframes);
 out.dRatio = zeros(nMasks,nframes);
 
-out.avSignalBG = zeros(nMasks,nframesBaseLine);
-out.dSignalBG = zeros(nMasks,nframesBaseLine);
-out.ratioBG = zeros(nMasks,nframesBaseLine);
-out.dRatioBG = zeros(nMasks,nframesBaseLine);
 
 if(~isfield(in,'AV1'))
     AV1 = squeeze(sum(in.ch1a,3))/nframes; % The average image for ch1
-    BG1 = squeeze(sum(in.BaseLine,3))/nframesBaseLine; % seb: The average image for Baseline
 %     AV2 = squeeze(sum(in.ch2a,3))/nframes; % The average image for ch1
     out.AV1 = AV1;
-    out.BG1 = BG1;
 %     out.AV2 = AV2;
 end
 
@@ -107,27 +104,11 @@ end
 sNmask = sum(sum(NMask));
 Nmaski = find(NMask);
 
-for ind = 1:nframesBaseLine
-    B = double(squeeze(in.BaseLine(:,:,ind)));
-    
-    for k = 1:nMasks
-
-        masked = B(masksi{k});
-        Nmasked = B(Nmaski);
-        out.avSignalBG(k,ind) = (sum(masked))./smask(k);
-        out.dSignalBG(k,ind) = out.avSignalBG(k,ind) - (sum(Nmasked))./sNmask;
-        
-      
-    end
-end
-
 
 for i = 1:nMasks
     out.ratio(i,:) = out.avSignal1(i,:); %./out.avSignal2(i,:);
     out.dRatio(i,:) = out.dSignal1(i,:); %./out.dSignal2(i,:);
     
-    out.ratioBG(i,:) = out.avSignalBG(i,:); %./out.avSignal2(i,:);
-    out.dRatioBG(i,:) = out.dSignalBG(i,:); %./out.dSignal2(i,:);
 end
 
 %% Bleaching analysis

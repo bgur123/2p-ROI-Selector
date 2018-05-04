@@ -8,6 +8,18 @@ if exist('in.xml.linesperframe') && exist('in.xml.pixperline')
 else
     CMask = zeros(str2double(in.xml.linesPerFrame), str2double(in.xml.pixelsPerLine), 3);
 end
+
+% Comparing the compatibility of two images
+example_previous_mask = masks{1};
+[s1 s2] = size(example_previous_mask);
+[s1n s2n ~] = size(CMask);
+
+if ~(s1 == s1n) || ~(s2 == s2n)
+    errordlg('Previous and current image dimensions do not match. Can''t proceed with superimposing masks')
+end
+
+
+
 cm = colormap(handles.ROIaxes,'lines');
 
 for i = 1:NMasks
