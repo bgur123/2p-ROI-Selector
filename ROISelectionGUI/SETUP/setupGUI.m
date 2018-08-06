@@ -11,13 +11,13 @@ msgbox('Please select your folder containing the GUI')
 pause(2)
 pathName = uigetdir(curDir,'Select the folder containing GUI');
 
-msgbox('Select folder containing your data for later ROI selection')
+msgbox('Select folder containing your raw data for later ROI selection')
 pause(2)
-data_folder = uigetdir(curDir,'Select folder containing your data for later ROI selection');
+data_folder = uigetdir(curDir,'Select folder containing your raw data for later ROI selection');
 
-msgbox('Select folder containing your Pdata')
+msgbox('Select folder containing (will contain) your Pdata')
 pause(2)
-Pdata_folder = uigetdir(curDir,'Select folder containing your Pdata');
+Pdata_folder = uigetdir(curDir,'Select folder containing (will contain) your Pdata');
 
 savePath = fullfile(pathName,'UserFolders.mat');
 save(savePath,'pathName','data_folder','Pdata_folder');

@@ -22,7 +22,7 @@ function varargout = ROISelector_v1(varargin)
 
 % Edit the above text to modify the response to help ROISelector_v1
 
-% Last Modified by GUIDE v2.5 12-Mar-2018 19:11:15
+% Last Modified by GUIDE v2.5 27-Jul-2018 09:48:44
 
 % Begin initialization code - DO NOT EDIT
 
@@ -64,7 +64,7 @@ try
     handles.Path_folder = pathName ;
     
 catch error
-    errordlg('User folder information was not found please run the GUI Setup')
+    errordlg('User folder information was not found... please run the GUI Setup')
 end
 
 
@@ -673,18 +673,6 @@ handles.FigureType = contents{get(hObject,'Value')};
 guidata(hObject, handles);
 
 
-% --- Executes on button press in pushbutton20.
-function pushbutton20_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton20 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-cd(handles.foldername)
-[handles.video_file_name,handles.ImagePathName] = uigetfile({'*.mp4'},'Select the video file');
-cd(handles.ImagePathName)
-implay(handles.video_file_name)
-
-guidata(hObject, handles);
-
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
 % --- Otherwise, executes on mouse press in 5 pixel border or over pushbutton20.
 % VIDEO PLAYER
@@ -694,3 +682,44 @@ function pushbutton20_ButtonDownFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
+% --- Executes on selection change in popupmenu4.
+% Average image or max image options
+function popupmenu4_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu4 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu4
+contents = cellstr(get(hObject,'String'));
+handles.ImageShowType = contents{get(hObject,'Value')};
+guidata(hObject, handles);
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu4_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+contents = cellstr(get(hObject,'String'));
+handles.ImageShowType = contents{get(hObject,'Value')};
+guidata(hObject, handles);
+
+
+%  NOT USED ANYMORE
+% % --- Executes on button press in pushbutton20.
+% function pushbutton20_Callback(hObject, eventdata, handles)
+% % hObject    handle to pushbutton20 (see GCBO)
+% % eventdata  reserved - to be defined in a future version of MATLAB
+% % handles    structure with handles and user data (see GUIDATA)
+% cd(handles.foldername)
+% [handles.video_file_name,handles.ImagePathName] = uigetfile({'*.mp4'},'Select the video file');
+% cd(handles.ImagePathName)
+% implay(handles.video_file_name)
+% 
+% guidata(hObject, handles);

@@ -11,7 +11,8 @@ setupGUI.m
 
 -Manual numbering of layers based on visual inspection
 	-Can be done in GUI integrated or external figures
-
+-Manual assignment of groups for ROIs
+	-Layer numbers (M1 etc.) and cell types(L2-L3) can be labeled. 
 -Transferring ROI masks from one image to another image within same fly dataset
 -Options include:
 	- Moving the mask

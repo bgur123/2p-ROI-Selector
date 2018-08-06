@@ -27,14 +27,21 @@ end
 
 %Average image for channel1 and BaseLine channel
 AV = squeeze( sum( in.ch1a,3 ) ) / nframes; % The average image for ch1
-
+Image_max = max( in.ch1a,[],3 ) ;
 if baselineExist
     BG = squeeze(sum(in.BaseLine,3))/nframesBaseLine; % The average image for BaseLine sequence
 end
 %% -------------- ROI selection and saving --------------
 
-    
-imagesc( AV , 'parent' , handles.ROIaxes );
+
+switch handles.ImageShowType
+    case 'Average image'    
+        imagesc( AV , 'parent' , handles.ROIaxes );
+    case 'Max int. proj.'
+      
+        imagesc(Image_max, 'parent' , handles.ROIaxes );
+end
+
 
 colormap gray;
 
@@ -103,7 +110,14 @@ cd(currPath);
 d = dir('curMasks*.mat');
 ind = length(d)+1;
 if (ind == 1)
-    imagesc(AV, 'parent' , handles.ROIaxes );colormap gray;
+    switch handles.ImageShowType
+    case 'Average image'    
+        imagesc( AV , 'parent' , handles.ROIaxes );
+    case 'Max proj. im.'
+      
+        imagesc(Image_max, 'parent' , handles.ROIaxes );
+    end
+    colormap gray;
     axes(handles.ROIaxes)
     title('select background region');
     NMask = roipoly;
@@ -123,8 +137,10 @@ end
 numberOfCategories = inputdlg( 'Enter the number of diferent categories for your ROIs' );
 numberOfCategories = str2num( numberOfCategories{ 1 } );
 for iCategory = 1:numberOfCategories
-    categoryLabel{iCategory} = inputdlg( 'Enter the name of the category' );
-    ROIsCategory{iCategory} = inputdlg( 'Enter the cells numbers belonging to that category (ea., 1:5)' );
+    categoryLabel{iCategory} = inputdlg( sprintf('Enter the name of the category # %d',...
+        iCategory) );
+    ROIsCategory{iCategory} = inputdlg( sprintf('Enter the cells numbers belonging category # %d (ea., 1:5)',...
+        iCategory)  );
 end
 
 % ------- Saving data --------
