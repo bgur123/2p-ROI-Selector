@@ -109,11 +109,12 @@ switch moveROI
             if button == 1
                 % TO MODIFY
                 xlabel({'Redraw the ROI'},'fontweight','bold');
-                drawnow;
+%                 drawnow;
                 ROIFound = 0;
                 for indMask = 1:length(masks)
                     if masks{indMask}(y1, x1) %If pixel selected is in the mask
-                        masks{indMask} = [];
+                        masks{indMask}(:) = 0 ;
+                        show_mask(masks, in, handles)
                         masks{indMask} = roipoly; %Select the new mask
                         
                         ROIFound = 1;

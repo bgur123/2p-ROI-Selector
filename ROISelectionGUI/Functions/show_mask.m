@@ -37,11 +37,13 @@ end
 cla(handles.ROIaxes, 'reset')
 
 imageROI = imshow(AV,[],'parent',handles.ROIaxes);
+% imageROI = imagesc(AV,'parent',handles.ROIaxes);
+
 % Important for getting a gray average image and not colored since the
 % function we used for getting a colormap for masks sets the color for the
 % image to 'lines'
 colormap(handles.ROIaxes,'gray');
 
 hold(handles.ROIaxes,'on');
-h = imshow(flipud(CMask),'parent',handles.ROIaxes);
+h = imagesc(flipud(CMask),'parent',handles.ROIaxes);
 set(h,'AlphaData',0.3); %Make the masks a bit transparent to see the image
