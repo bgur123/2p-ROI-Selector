@@ -37,6 +37,6 @@ if maskRange ~= 1 && maskRange ~= 0, error('bwMask must consist only of the valu
 % Create colour image and overlay it
 rgbI = cat(3, colour(1)*ones(size(bwMask)), colour(2)*ones(size(bwMask)), colour(3)*ones(size(bwMask)));
 hold on,
-hOVM = imshow(rgbI, 'Parent', axHandle);
+hOVM = imagesc(rgbI, 'Parent', axHandle);
 set(hOVM, 'AlphaData', bwMask*transparency);       % use mask values as alpha channel of overlay
 hold off;
