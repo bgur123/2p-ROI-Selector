@@ -38,7 +38,7 @@ end
 
 % Plotting the average image
 reset(handles.showAxes);
-imageROI = imshow(AV,[],'parent',handles.showAxes);
+imagesc(AV,'parent',handles.showAxes);
 % Important for getting a gray average image and not colored since the
 % function we used for getting a colormap for masks sets the color for the
 % image to 'lines'
@@ -48,7 +48,7 @@ colormap(handles.showAxes,'gray');
 hold(handles.showAxes,'on');
 
 %Plotting the masks
-h = imshow(flipud(CMask),'parent',handles.showAxes);
+h = imagesc(flipud(CMask),'parent',handles.showAxes);
 
 %Numbering the masks
 for iMask = 1:NMasks

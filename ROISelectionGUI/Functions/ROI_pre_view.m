@@ -20,7 +20,7 @@ title(titleStr)
 colormap gray;
 
 
-% Checking different image creation types
+% Checking different image creation types, average image and max int image
 figure
 subplot(2,1,1)
 imagesc( AV );

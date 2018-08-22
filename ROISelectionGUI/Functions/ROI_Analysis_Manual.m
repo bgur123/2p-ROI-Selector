@@ -62,6 +62,11 @@ axes(handles.ROIaxes)
 while ( ~done )
     
     masks{ ROIindex } = roipoly;
+    if isempty(find(masks{ ROIindex }))
+        warning('Single point clicked, not taking ROI')
+        continue
+    end
+        
     alphamask( masks{ ROIindex } , [1 1 1] , 0.33 );
     hold on ;
     done = waitforbuttonpress;

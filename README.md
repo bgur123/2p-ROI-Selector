@@ -15,8 +15,8 @@ setupGUI.m
 	-Layer numbers (M1 etc.) and cell types(L2-L3) can be labeled. 
 -Transferring ROI masks from one image to another image within same fly dataset
 -Options include:
-	- Moving the mask
-	- Modifying or deleting existing ROIs
+	- Moving the mask 
+	- Modifying or deleting existing ROIs (Modify -> right click on ROI | Delete -> 		right click)
 	- Adding new ROIs
 
 -View of previously selected ROIs simultaneously while selecting a new set of ROIs
@@ -29,8 +29,5 @@ setupGUI.m
 
 ## Current Problems about GUI
 
-1) Auto numerate when using different ROI numbers than previous masks
-
-2) During setup a function should be added to understand the data naming structure of the user
-
-3) GUI size should be adjusted automatically from computer to computer FIXED??
+1) After accidentally clicking adding new ROIs, exiting without any selection is not possible
+2)

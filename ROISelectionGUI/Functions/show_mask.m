@@ -32,12 +32,26 @@ nframes = in.xml.frames;
 if(isfield(in,'AV1'))
     AV = in.AV1;
 else
-    AV = squeeze(sum(in.ch1a,3))/nframes; % The average current image for ch1
+    %Average and max image for channel1 and BaseLine channel
+    AV = squeeze( sum( in.ch1a,3 ) ) / nframes; % The average image for ch1
+    Image_max = max( in.ch1a,[],3 ) ;
 end
+
+
+
 cla(handles.ROIaxes, 'reset')
 
-imageROI = imshow(AV,[],'parent',handles.ROIaxes);
-% imageROI = imagesc(AV,'parent',handles.ROIaxes);
+
+% imageROI = imshow(AV,[],'parent',handles.ROIaxes);
+switch handles.ImageShowType
+    case 'Average image'    
+        imagesc( AV , 'parent' , handles.ROIaxes );
+    case 'Max int. proj.'
+      
+        imagesc(Image_max, 'parent' , handles.ROIaxes );
+end
+
+
 
 % Important for getting a gray average image and not colored since the
 % function we used for getting a colormap for masks sets the color for the
