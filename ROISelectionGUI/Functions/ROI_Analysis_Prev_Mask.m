@@ -115,9 +115,15 @@ switch moveROI
                     if masks{indMask}(y1, x1) %If pixel selected is in the mask
                         masks{indMask}(:) = 0 ;
                         show_mask(masks, in, handles)
-                        masks{indMask} = roipoly; %Select the new mask
-                        
-                        ROIFound = 1;
+                        while(~ROIFound)
+                            masks{indMask} = roipoly; %Select the new mask
+                            % if mistakenly clicked 1 or 2 points
+                            if isempty(find(masks{ indMask }))
+                                warning('Single point clicked, not taking ROI')
+                                continue
+                            end
+                            ROIFound = 1;
+                        end
                     end
                 end
                 if ~ROIFound
@@ -177,6 +183,11 @@ switch ROIChoice
         ROIindex = 1;
         while ( ~done )
             masks{ end + 1 } = roipoly;
+            % if mistakenly clicked 1 or 2 points
+            if isempty(find(masks{ end + 1 }))
+                warning('Single point clicked, not taking ROI')
+                continue
+            end
             alphamask( masks{ end } , [1 1 1] , 0.33 );
             hold on ;
             done = waitforbuttonpress;
