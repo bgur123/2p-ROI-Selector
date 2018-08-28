@@ -22,7 +22,7 @@ function varargout = ROISelector_v1(varargin)
 
 % Edit the above text to modify the response to help ROISelector_v1
 
-% Last Modified by GUIDE v2.5 27-Jul-2018 09:48:44
+% Last Modified by GUIDE v2.5 28-Aug-2018 17:05:41
 
 % Begin initialization code - DO NOT EDIT
 
@@ -268,8 +268,7 @@ secondImageData = ROI_Selector(handles.foldername,handles.secondImageNumber);
 set(handles.ROISelstatusAxes,'Color',[0 1 0])
 clear handles.secondImageData
 handles.secondImageData = secondImageData;
-maskFileNo = handles.secondImageMaskNumber;
-ROI_Show(secondImageData.out, maskFileNo, handles);
+ROI_Show(handles.secondImageData.out, handles.secondImageMaskNumber, handles);
 
 
 guidata(hObject, handles);
@@ -723,3 +722,21 @@ guidata(hObject, handles);
 % implay(handles.video_file_name)
 % 
 % guidata(hObject, handles);
+
+
+% --- Executes on button press in checkbox4.
+% To hide ROIs
+function checkbox4_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox4
+handles.hide_roi = get(hObject,'Value');
+if isfield(handles,'secondImageData')
+    ROI_Show(handles.secondImageData.out, handles.secondImageMaskNumber, handles);
+else
+    warning('Second image data is not loaded yet, please first load the second image by selecting an image and mask number and using "Click to view ROIs" button.')
+end
+
+guidata(hObject, handles);

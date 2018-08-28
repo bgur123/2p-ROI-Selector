@@ -227,7 +227,15 @@ cd(curDir);
 d = dir('curMasks*.mat');
 ind = length(d)+1;
 if (ind == 1)
-    imagesc(AV);colormap gray;
+    switch handles.ImageShowType
+    case 'Average image'    
+        imagesc( AV , 'parent' , handles.ROIaxes );
+    case 'Max proj. im.'
+      
+        imagesc(Image_max, 'parent' , handles.ROIaxes );
+    end
+    colormap gray;
+    axes(handles.ROIaxes)
     title('select background region');
     NMask = roipoly;
 else
