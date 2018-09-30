@@ -184,7 +184,7 @@ switch ROIChoice
         while ( ~done )
             masks{ end + 1 } = roipoly;
             % if mistakenly clicked 1 or 2 points
-            if isempty(find(masks{ end + 1 }))
+            if isempty(find(masks{ end }))
                 warning('Single point clicked, not taking ROI')
                 continue
             end
