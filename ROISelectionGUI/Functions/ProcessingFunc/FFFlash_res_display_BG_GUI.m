@@ -22,40 +22,51 @@ curDir = fullfile(handles.foldername,imageNum);
 cd(curDir);
 
 
-
+f1 = figure(1);
+ax1 = axes(f1);
 for i = 1:nMasks
     f1= figure(1);
     cm = colormap('lines');
-    plot((1:nframes)/fps,in.avSignal1(i,:),'color',cm(i,:));hold on;
-    
-%     plot((1:nframes)/fps,in.avSignal2(i,:),'color',cm(i,:));
+    signal_plot = plot((1:nframes)/fps,in.avSignal1(i,:),...
+        'color',cm(i,:),'Parent',ax1);hold on;
 end
 
-xlabel('time (sec)');
-title('Signal in region of interest - before background substraction, aligned data');
+ax1.XLabel.String = 'time (sec)';
+ax1.Title.String = 'Signal in region of interest - before background substraction, aligned data';
 
 
 f2 = figure(2); 
+ax2 = axes(f2);
 for i = 1:nMasks
-    plot((1:nframes)/fps,(in.dSignal1(i,:)/mean(in.dSignal1(i,:)))+1*(i-1),'color',max(cm(i,:),.7));hold on;
-%     plot((1:nframes)/fps,(in.dSignal2(i,:)/mean(in.dSignal2(i,:)))+1*(i-1),'color',max(cm(i,:),.7));
-    plot((1:nframes)/fps,in.dRatio(i,:)/mean(in.dRatio(i,:))+1*(i-1),'color',cm(i,:),'linewidth',2);
+    s1 = plot((1:nframes)/fps,(in.dSignal1(i,:)/mean(...
+        in.dSignal1(i,:)))+1*(i-1),'color',max(cm(i,:),.7),...
+        'Parent',ax2);
+    hold on;
+    s2 = plot((1:nframes)/fps,in.dRatio(i,:)/mean(...
+        in.dRatio(i,:))+1*(i-1),'color',cm(i,:),'linewidth',2,...
+        'Parent',ax2);
 end
-plot((1:nframes)/fps,out.fstimval*0.2,'LineWidth',2);
-% plot((1:nframes)/fps,sig3/max(sig3),'LineWidth',1);
-axis([0 nframes/fps 0 i+1]);
+stim_plot = plot((1:nframes)/fps,out.fstimval*0.2,'LineWidth',2,'Parent',ax2);
+
 
 inds = find(dmask~=0);
 for k = 1:length(inds)
     if(dmask(inds(k))>0)
-        line([inds(k)/fps inds(k)/fps],[0 nMasks+1],'color',cm(i,:),'LineWidth',1,'LineStyle','-');
+        l1 = line([inds(k)/fps inds(k)/fps],[0 nMasks+1],...
+            'color',cm(i,:),'LineWidth',1,'LineStyle','-',...
+            'Parent',ax2);
     else
-        line([inds(k)/fps inds(k)/fps],[0 nMasks+1],'color',cm(i,:),'LineWidth',1,'LineStyle','--');
+        l1 = line([inds(k)/fps inds(k)/fps],[0 nMasks+1],...
+            'color',cm(i,:),'LineWidth',1,'LineStyle','--',...
+            'Parent',ax2);
     end
+    
+    
 end
-xlabel('time (sec)');
-title('Ratio, YFP, CFP signals - aligned data');
-
+ax2.XLabel.String = 'time (sec)';
+ax2.Title.String = 'Ratio, YFP, CFP signals - aligned data' ;
+ax2.XLim = [0 nframes/fps];
+ax2.YLim = [ 0 i+1];
 % Create a colored map of ROIs
 if exist('in.xml.linesperframe') && exist('in.xml.pixperline')
     CMask = zeros(in.xml.linesperframe, in.xml.pixperline, 3); % Luis 13.11.2015
@@ -76,10 +87,15 @@ if(~isfield(in,'AV1'))
 else
     AV = in.AV1;
 end
-f3 = figure;imshow(flipud(AV),[]);
-hold on;h = imshow(CMask);
+f3 = figure;
+ax3 = axes(f3);
+imagesc(AV,'Parent',ax3);
+colormap gray;
+hold on;
+h = imagesc(flipud(CMask),'Parent',ax3);
 set(h,'AlphaData',0.5);
-title(sprintf('average aligned image at z-depth %0.5g microns',in.xml.zdepth));
+ax3.Title.String = sprintf('average aligned image at z-depth %0.5g microns',...
+    in.xml.zdepth);
 
 
 %% Saving figures
