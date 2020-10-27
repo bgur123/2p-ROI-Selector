@@ -1,5 +1,5 @@
-# GUI for ROI selection - Under development by Burak Gür
-This is a Graphical User Interface (GUI) for selecting Regions of Interest (ROI) within the 2-photon images. 
+# 2p-ROI-Selector 
+This is a Graphical User Interface (GUI) for selecting Regions of Interest (ROI) and extracting their signals from the two-photon time series images. 
 
 ## Includes a setup function for storing necessary folder paths
 setupGUI.m
@@ -27,7 +27,11 @@ setupGUI.m
 
 -Transferring the saved pData to a master folder
 
+## Pre-processing of data
+In order to use this GUI, the data should be pre-processed in a certain manner. These scripts are included in the "pre_processing"" folder.
+
+First run the folder processing and then the alignment steps.
+
 ## Current Problems about GUI
 
-1) After accidentally clicking adding new ROIs, exiting without any selection is not possible
-2)
+No problem registered.

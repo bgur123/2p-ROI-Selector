@@ -9,3 +9,7 @@
 -Added option to select ROIs in external figures which is useful in ~x>>y cases
 -Added option to assign categories for selected ROIs
 -Added option for scaling GUI for the screen resolution (?)
+
+# Update 4 (27.10.2020)
+-Changed the variable names to fit with the newly written pre-processing. (For Freya's master thesis)
+
