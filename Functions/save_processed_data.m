@@ -16,8 +16,7 @@ if(isfield(in,'images_aligned'))
 end
 
 [rest,imageID] = fileparts(handles.seriesPath);
-[~,flyID] = fileparts(rest);
-flyroot = in.dataID;
-save([flyID '_' imageID '_pData.mat'],'data');
+
+save([in.imageID '_pData.mat'],'data');
 
 cd(handles.seriesPath);

@@ -43,13 +43,7 @@ catch error
 end
 
 
-m = dir('data_file*');
+imageData = load('aligned_data');
 
-imageData = load('data_file');
 
-% If imaged 2 channels by mistake change the variables
-if isfield(imageData.out,'ch2')
-    warning('2 channels found, switching the channel data')
-    imageData.out.ch1a = imageData.out.ch2a;
-end
     

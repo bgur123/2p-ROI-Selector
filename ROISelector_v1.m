@@ -148,6 +148,7 @@ imageNumber = str2double(get(hObject, 'String'));
 handles.imageNumber = imageNumber;
 set(handles.ROIstatusAxes,'Color',[1 0 0])
 
+handles.imageNumberName = sprintf('TSeries-%d',imageNumber);
 %Converts it to string for display
 if ~isfield(handles,'imageNumberText')
        
@@ -170,7 +171,7 @@ function pushbutton8_Callback(hObject, eventdata, handles)
 fprintf('Visualizing ROIs')
 [imageData, file] = ROI_Selector(handles.foldername,handles.imageNumber);
 
-
+[~,handles.imageNumberName] = fileparts(file);
 handles.seriesPath = file;
 handles.imageData = imageData;
 ROI_pre_view(imageData.out, handles)
